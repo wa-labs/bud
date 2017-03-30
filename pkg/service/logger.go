@@ -21,6 +21,21 @@ func NewLogger(env string) Logger {
 	}
 }
 
+// NewJSONLogger returns a logger that formats keyvals to JSON
+func NewJSONLogger(env string) Logger {
+	writer := log.NewSyncWriter(os.Stderr)
+	debugLogger := log.NewNopLogger()
+	prodLogger := log.NewJSONLogger(writer)
+
+	if strings.Compare("Debug", env) == 0 {
+		debugLogger = log.NewJSONLogger(writer)
+	}
+	return &logger{
+		debug: debugLogger,
+		prod:  prodLogger,
+	}
+}
+
 // Logger ...
 type Logger interface {
 	Debug(keyvals ...interface{}) error
